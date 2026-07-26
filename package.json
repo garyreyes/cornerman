@@ -1,0 +1,10 @@
+{
+  "name": "cornerman",
+  "version": "1.0.0",
+  "description": "Boxing round timer with randomized combo call-outs.",
+  "private": true,
+  "scripts": {
+    "build": "node build.js",
+    "sync": "npm run build && npx cap sync"
+  }
+}
