@@ -1,5 +1,8 @@
-/* audio.js — the bell and warning-clap tones, via Web Audio.
-   No knowledge of settings, timer, or DOM. */
+/* audio.js — bell/warning tones via Web Audio.
+   Bell sound is selectable (settings.bellType); everything else about
+   this module still knows nothing about the DOM or the timer. */
+
+import { settings } from "./state.js";
 
 let audioCtx = null;
 
@@ -26,22 +29,46 @@ function tone(freq, start, dur, type, gainPeak) {
   osc.stop(start + dur + 0.05);
 }
 
+// Each pattern is a function(startTime, gainMultiplier) that schedules one
+// "ring" of the bell. gainMultiplier lets playFinalBell() fade later rings
+// in the triple-ring sequence, same as the original design.
+const BELL_PATTERNS = {
+  classic: function (t, g) {
+    [880, 1320, 1760].forEach(function (f, i) {
+      tone(f, t, 1.1, "sine", (0.22 - i * 0.05) * g);
+    });
+  },
+  digital: function (t, g) {
+    tone(1500, t, 0.11, "square", 0.26 * g);
+    tone(1500, t + 0.16, 0.11, "square", 0.26 * g);
+    tone(1500, t + 0.32, 0.11, "square", 0.26 * g);
+  },
+  airhorn: function (t, g) {
+    tone(300, t, 0.85, "sawtooth", 0.28 * g);
+    tone(304, t, 0.85, "sawtooth", 0.16 * g);
+  },
+  buzzer: function (t, g) {
+    tone(150, t, 0.45, "square", 0.32 * g);
+    tone(150, t + 0.5, 0.45, "square", 0.32 * g);
+  }
+};
+
+function getPattern() {
+  return BELL_PATTERNS[settings.bellType] || BELL_PATTERNS.classic;
+}
+
 export function playBell() {
   if (!audioCtx) return;
   const t = audioCtx.currentTime;
-  [880, 1320, 1760].forEach(function (f, i) {
-    tone(f, t, 1.1, "sine", 0.22 - i * 0.05);
-  });
+  getPattern()(t, 1);
 }
 
 export function playFinalBell() {
   if (!audioCtx) return;
   const t = audioCtx.currentTime;
+  const pattern = getPattern();
   for (let i = 0; i < 3; i++) {
-    const start = t + i * 0.5;
-    [660, 990, 1320].forEach(function (f, j) {
-      tone(f, start, 1.0, "sine", 0.2 - j * 0.04);
-    });
+    pattern(t + i * 0.6, 1 - i * 0.15);
   }
 }
 

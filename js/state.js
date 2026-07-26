@@ -43,6 +43,8 @@ export function createDefaultSettings() {
     voiceRate: 1.5, // speech speed multiplier
     voiceURI: "", // "" = device default voice
     calloutMode: "numbers", // "numbers" | "names"
+    bellType: "classic", // "classic" | "digital" | "airhorn" | "buzzer"
+    restCountdownEnabled: true, // speak "3, 2, 1" during the last 3s of rest
     punches: defaultPunches.slice()
   };
 }
@@ -58,7 +60,8 @@ export const state = {
   tickHandle: null,
   tenWarned: false,
   nextComboAt: 0,
-  comboCount: 0
+  comboCount: 0,
+  lastRestCountdown: null // tracks which second (3/2/1) was last spoken, to fire once each
 };
 
 export function normalizePunches(list) {

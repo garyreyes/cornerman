@@ -7,12 +7,14 @@ import { settings, state } from "./state.js";
 import { clamp, randInt } from "./utils.js";
 import { generateCombo } from "./comboEngine.js";
 import { playBell, playFinalBell, playWarningClap, ensureAudio } from "./audio.js";
-import { speakCombo, primeSpeech } from "./speech.js";
+import { speakCombo, speakCountdown, primeSpeech } from "./speech.js";
 
 let callbacks = {
   render: function () {},
   showCombo: function () {},
   setRestMessage: function () {},
+  showRestCountdown: function () {},
+  clearComboNumbers: function () {},
   onFinish: function () {},
   onReset: function () {},
   onStart: function () {}
@@ -30,7 +32,9 @@ function startPhase(phase, durationSec) {
   if (phase === "work") {
     const firstGapMs = Math.min(settings.comboGapMin, 2) * 1000;
     state.nextComboAt = Date.now() + randInt(Math.max(500, firstGapMs), Math.max(1500, settings.comboGapMin * 1000));
+    callbacks.clearComboNumbers();
   } else {
+    state.lastRestCountdown = null;
     callbacks.showCombo(null);
     callbacks.setRestMessage("Rest — hands down, breathe");
   }
@@ -55,6 +59,17 @@ function tick() {
       const gapMin = clamp(settings.comboGapMin, 1, settings.comboGapMax);
       const gapMax = Math.max(gapMin, settings.comboGapMax);
       state.nextComboAt = now + randInt(gapMin * 1000, gapMax * 1000);
+    }
+  } else if (state.phase === "rest") {
+    if (
+      settings.restCountdownEnabled &&
+      remainingSec <= 3 &&
+      remainingSec >= 1 &&
+      state.lastRestCountdown !== remainingSec
+    ) {
+      state.lastRestCountdown = remainingSec;
+      callbacks.showRestCountdown(remainingSec);
+      speakCountdown(remainingSec);
     }
   }
 
@@ -94,6 +109,7 @@ export function start() {
   if (state.phase === "idle" || state.phase === "done") {
     state.round = 1;
     state.comboCount = 0;
+    state.lastRestCountdown = null;
     callbacks.onStart();
     startPhase("work", settings.roundLen);
     playBell();
@@ -120,5 +136,6 @@ export function reset() {
   state.running = false;
   state.remaining = null;
   state.comboCount = 0;
+  state.lastRestCountdown = null;
   callbacks.onReset();
 }

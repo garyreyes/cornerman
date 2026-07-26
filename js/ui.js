@@ -8,7 +8,7 @@ import { settings, state } from "./state.js";
 import { clamp, fmt } from "./utils.js";
 import * as timer from "./timer.js";
 import { initVoices, availableVoices, speakCombo } from "./speech.js";
-import { ensureAudio } from "./audio.js";
+import { ensureAudio, playBell } from "./audio.js";
 import { primeSpeech } from "./speech.js";
 import { saveSettings } from "./storage.js";
 import { renderPunchList, addPunch } from "./punchEditor.js";
@@ -90,6 +90,17 @@ function setRestMessage(text) {
   comboNames.textContent = text;
 }
 
+function showRestCountdown(n) {
+  comboNumbers.textContent = String(n);
+  comboNumbers.classList.remove("pulse");
+  void comboNumbers.offsetWidth;
+  comboNumbers.classList.add("pulse");
+}
+
+function clearComboNumbers() {
+  comboNumbers.textContent = "—";
+}
+
 function finishWorkoutUI() {
   comboNumbers.textContent = "🥊";
   comboNames.textContent = "Workout complete";
@@ -114,6 +125,8 @@ timer.initTimer({
   render: render,
   showCombo: showCombo,
   setRestMessage: setRestMessage,
+  showRestCountdown: showRestCountdown,
+  clearComboNumbers: clearComboNumbers,
   onFinish: finishWorkoutUI,
   onReset: resetUI,
   onStart: onTimerStart
@@ -184,6 +197,10 @@ function updateSettingsLabels() {
   document.querySelectorAll("#calloutModeRow button").forEach(function (btn) {
     btn.classList.toggle("active", btn.getAttribute("data-mode") === settings.calloutMode);
   });
+  document.querySelectorAll("#bellTypeRow button").forEach(function (btn) {
+    btn.classList.toggle("active", btn.getAttribute("data-bell") === settings.bellType);
+  });
+  $("restCountdownToggle").checked = settings.restCountdownEnabled;
 }
 
 document.querySelectorAll(".stepper button").forEach(function (btn) {
@@ -226,6 +243,24 @@ document.querySelectorAll("#calloutModeRow button").forEach(function (btn) {
     updateSettingsLabels();
     saveSettings();
   });
+});
+
+document.querySelectorAll("#bellTypeRow button").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    settings.bellType = btn.getAttribute("data-bell");
+    updateSettingsLabels();
+    saveSettings();
+  });
+});
+
+$("restCountdownToggle").addEventListener("change", function () {
+  settings.restCountdownEnabled = $("restCountdownToggle").checked;
+  saveSettings();
+});
+
+$("testBellBtn").addEventListener("click", function () {
+  ensureAudio();
+  playBell();
 });
 
 $("voiceToggle").addEventListener("change", function () {

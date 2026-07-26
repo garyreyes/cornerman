@@ -43,6 +43,25 @@ export function speakCombo(picked) {
   } catch (e) {}
 }
 
+// Speaks a single number (used for the 3-2-1 rest countdown). Respects the
+// same master voice toggle and voice/rate choice as the combo call-outs.
+export function speakCountdown(n) {
+  if (!settings.voiceEnabled) return;
+  if (!("speechSynthesis" in window)) return;
+  try {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(String(n));
+    utter.rate = settings.voiceRate;
+    utter.pitch = 1.0;
+    utter.volume = 1.0;
+    if (settings.voiceURI) {
+      const match = availableVoices.filter(function (v) { return v.voiceURI === settings.voiceURI; })[0];
+      if (match) utter.voice = match;
+    }
+    window.speechSynthesis.speak(utter);
+  } catch (e) {}
+}
+
 // A near-silent, near-instant utterance that "wakes up" the speech engine —
 // some mobile browsers need this before the first real call-out will speak.
 export function primeSpeech() {
