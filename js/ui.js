@@ -7,7 +7,7 @@
 import { settings, state } from "./state.js";
 import { clamp, fmt } from "./utils.js";
 import * as timer from "./timer.js";
-import { initVoices, availableVoices, speakCombo } from "./speech.js";
+import { initVoices, availableVoices, speakCombo, speakCountdown } from "./speech.js";
 import { ensureAudio, playBell } from "./audio.js";
 import { primeSpeech } from "./speech.js";
 import { saveSettings } from "./storage.js";
@@ -197,9 +197,7 @@ function updateSettingsLabels() {
   document.querySelectorAll("#calloutModeRow button").forEach(function (btn) {
     btn.classList.toggle("active", btn.getAttribute("data-mode") === settings.calloutMode);
   });
-  document.querySelectorAll("#bellTypeRow button").forEach(function (btn) {
-    btn.classList.toggle("active", btn.getAttribute("data-bell") === settings.bellType);
-  });
+  $("bellTypeSelect").value = settings.bellType;
   $("restCountdownToggle").checked = settings.restCountdownEnabled;
 }
 
@@ -245,12 +243,9 @@ document.querySelectorAll("#calloutModeRow button").forEach(function (btn) {
   });
 });
 
-document.querySelectorAll("#bellTypeRow button").forEach(function (btn) {
-  btn.addEventListener("click", function () {
-    settings.bellType = btn.getAttribute("data-bell");
-    updateSettingsLabels();
-    saveSettings();
-  });
+$("bellTypeSelect").addEventListener("change", function () {
+  settings.bellType = $("bellTypeSelect").value;
+  saveSettings();
 });
 
 $("restCountdownToggle").addEventListener("change", function () {
@@ -261,6 +256,17 @@ $("restCountdownToggle").addEventListener("change", function () {
 $("testBellBtn").addEventListener("click", function () {
   ensureAudio();
   playBell();
+});
+
+$("testCountdownBtn").addEventListener("click", function () {
+  ensureAudio();
+  primeSpeech();
+  [3, 2, 1].forEach(function (n, i) {
+    setTimeout(function () {
+      showRestCountdown(n);
+      speakCountdown(n);
+    }, 150 + i * 900);
+  });
 });
 
 $("voiceToggle").addEventListener("change", function () {

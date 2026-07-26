@@ -88,12 +88,12 @@
     <h3>Sounds</h3>
     <div class="stepper-row">
       <span class="label">Bell sound</span>
-      <div class="preset-row inline" id="bellTypeRow">
-        <button type="button" data-bell="classic">Classic</button>
-        <button type="button" data-bell="digital">Digital</button>
-        <button type="button" data-bell="airhorn">Air Horn</button>
-        <button type="button" data-bell="buzzer">Buzzer</button>
-      </div>
+      <select id="bellTypeSelect" class="voice-select">
+        <option value="classic">Classic</option>
+        <option value="digital">Digital</option>
+        <option value="airhorn">Air Horn</option>
+        <option value="buzzer">Buzzer</option>
+      </select>
     </div>
     <button type="button" class="add-punch" id="testBellBtn">▶ Test bell</button>
     <div class="stepper-row">
@@ -103,6 +103,7 @@
         <span class="switch-slider"></span>
       </label>
     </div>
+    <button type="button" class="add-punch" id="testCountdownBtn">▶ Test countdown</button>
   </section>
 
   <section>
