@@ -1,10 +1,21 @@
-const CACHE_NAME = "cornerman-v4";
+const CACHE_NAME = "cornerman-v5";
 const APP_SHELL = [
   "./cornerman.html",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
-  "./apple-touch-icon.png"
+  "./apple-touch-icon.png",
+  "./css/styles.css",
+  "./js/app.js",
+  "./js/ui.js",
+  "./js/timer.js",
+  "./js/comboEngine.js",
+  "./js/speech.js",
+  "./js/audio.js",
+  "./js/punchEditor.js",
+  "./js/storage.js",
+  "./js/state.js",
+  "./js/utils.js"
 ];
 
 self.addEventListener("install", function(event){
