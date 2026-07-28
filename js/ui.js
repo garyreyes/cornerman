@@ -318,7 +318,8 @@ function updateVoiceStatus() {
     el.textContent = "No device voices detected yet. Tap \"Test voice\" — if you hear nothing, try opening this page in your phone's regular browser (Safari/Chrome) rather than inside another app.";
     el.classList.add("warn");
   } else {
-    el.textContent = availableVoices.length + " device voice(s) found. Tap \"Test voice\" to preview.";
+    el.textContent = a
+    vailableVoices.length + " device voice(s) found. Tap \"Test voice\" to preview.";
     el.classList.remove("warn");
   }
 }
