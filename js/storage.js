@@ -23,6 +23,9 @@ function applyParsed(parsed) {
     settings.punches = defaultPunches.slice();
   }
   settings.punches = normalizePunches(settings.punches);
+  if (!Array.isArray(settings.comboPresets)) {
+    settings.comboPresets = [];
+  }
 }
 
 export function loadSettings(cb) {

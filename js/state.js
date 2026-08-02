@@ -45,6 +45,12 @@ export function createDefaultSettings() {
     calloutMode: "numbers", // "numbers" | "names"
     bellType: "classic", // "classic" | "digital" | "airhorn" | "buzzer"
     restCountdownEnabled: true, // speak "3, 2, 1" during the last 3s of rest
+    comboMode: "random", // "random" | "presets"
+    comboPresets: [
+      { sequence: [1, 2], enabled: true },
+      { sequence: [1, 2, 3], enabled: true },
+      { sequence: [1, 1, 2], enabled: true }
+    ],
     punches: defaultPunches.slice()
   };
 }

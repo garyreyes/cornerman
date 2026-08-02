@@ -377,6 +377,39 @@
     letter-spacing:0.04em;
     cursor:pointer;
   }
+
+  .preset-label{
+    flex:1;
+    min-width:0;
+    font-family:var(--font-display);
+    font-size:0.95rem;
+    letter-spacing:0.03em;
+    color:var(--chalk);
+    word-break:break-word;
+  }
+  .preset-input-row{
+    display:flex;
+    gap:8px;
+    margin-top:4px;
+  }
+  .preset-text-input{
+    flex:1;
+    min-width:0;
+    background:var(--canvas);
+    border:1px solid var(--line);
+    color:var(--chalk);
+    padding:8px 10px;
+    border-radius:3px;
+    font-family:var(--font-body);
+    font-size:0.88rem;
+  }
+  .preset-text-input:focus{outline:1px solid var(--gold);}
+  .preset-input-row .add-punch{
+    width:auto;
+    margin-top:0;
+    padding:0 16px;
+    white-space:nowrap;
+  }
   .add-punch:active{background:var(--line);}
 
   .preset-row{

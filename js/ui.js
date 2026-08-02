@@ -12,6 +12,7 @@ import { ensureAudio, playBell } from "./audio.js";
 import { primeSpeech } from "./speech.js";
 import { saveSettings } from "./storage.js";
 import { renderPunchList, addPunch } from "./punchEditor.js";
+import { renderPresetList, addPreset, parsePresetInput } from "./presetEditor.js";
 
 const $ = function (id) { return document.getElementById(id); };
 
@@ -31,8 +32,14 @@ const closeSheetBtn = $("closeSheetBtn");
 const punchListEl = $("punchList");
 const addPunchBtn = $("addPunchBtn");
 const voiceSelect = $("voiceSelect");
+const presetListEl = $("presetList");
+const presetInput = $("presetInput");
+const addPresetBtn = $("addPresetBtn");
+const randomComboSettings = $("randomComboSettings");
+const presetComboSettings = $("presetComboSettings");
 
 const punchEditorOpts = { onChange: saveSettings, onLabelsChange: updateSettingsLabels };
+const presetEditorOpts = { onChange: saveSettings };
 
 /* ---------- core render ---------- */
 function renderLights() {
@@ -162,6 +169,7 @@ resetBtn.addEventListener("click", function () {
 /* ---------- settings sheet ---------- */
 function openSheet() {
   renderPunchList(punchListEl, settings, punchEditorOpts);
+  renderPresetList(presetListEl, settings, presetEditorOpts);
   populateVoiceSelect();
   updateSettingsLabels();
   updateVoiceStatus();
@@ -199,6 +207,11 @@ function updateSettingsLabels() {
   });
   $("bellTypeSelect").value = settings.bellType;
   $("restCountdownToggle").checked = settings.restCountdownEnabled;
+  document.querySelectorAll("#comboModeRow button").forEach(function (btn) {
+    btn.classList.toggle("active", btn.getAttribute("data-combo-mode") === settings.comboMode);
+  });
+  randomComboSettings.style.display = settings.comboMode === "presets" ? "none" : "";
+  presetComboSettings.style.display = settings.comboMode === "presets" ? "" : "none";
 }
 
 document.querySelectorAll(".stepper button").forEach(function (btn) {
@@ -241,6 +254,31 @@ document.querySelectorAll("#calloutModeRow button").forEach(function (btn) {
     updateSettingsLabels();
     saveSettings();
   });
+});
+
+document.querySelectorAll("#comboModeRow button").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    settings.comboMode = btn.getAttribute("data-combo-mode");
+    updateSettingsLabels();
+    saveSettings();
+  });
+});
+
+function tryAddPreset() {
+  const sequence = parsePresetInput(presetInput.value);
+  if (!sequence.length) return;
+  addPreset(settings, sequence);
+  renderPresetList(presetListEl, settings, presetEditorOpts);
+  presetInput.value = "";
+  presetInput.focus();
+  saveSettings();
+}
+addPresetBtn.addEventListener("click", tryAddPreset);
+presetInput.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    tryAddPreset();
+  }
 });
 
 $("bellTypeSelect").addEventListener("change", function () {
@@ -318,8 +356,7 @@ function updateVoiceStatus() {
     el.textContent = "No device voices detected yet. Tap \"Test voice\" — if you hear nothing, try opening this page in your phone's regular browser (Safari/Chrome) rather than inside another app.";
     el.classList.add("warn");
   } else {
-    el.textContent = a
-    vailableVoices.length + " device voice(s) found. Tap \"Test voice\" to preview.";
+    el.textContent = availableVoices.length + " device voice(s) found. Tap \"Test voice\" to preview.";
     el.classList.remove("warn");
   }
 }
