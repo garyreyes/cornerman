@@ -109,19 +109,38 @@
   <section>
     <h3>Combinations</h3>
     <div class="stepper-row">
-      <span class="label">Shortest combo</span>
-      <div class="stepper">
-        <button data-action="min-dec">−</button>
-        <span class="val" id="comboMinVal">1</span>
-        <button data-action="min-inc">+</button>
+      <span class="label">Mode</span>
+      <div class="preset-row inline" id="comboModeRow">
+        <button type="button" data-combo-mode="random">Random</button>
+        <button type="button" data-combo-mode="presets">Presets</button>
       </div>
     </div>
-    <div class="stepper-row">
-      <span class="label">Longest combo</span>
-      <div class="stepper">
-        <button data-action="max-dec">−</button>
-        <span class="val" id="comboMaxVal">6</span>
-        <button data-action="max-inc">+</button>
+
+    <div id="randomComboSettings">
+      <div class="stepper-row">
+        <span class="label">Shortest combo</span>
+        <div class="stepper">
+          <button data-action="min-dec">−</button>
+          <span class="val" id="comboMinVal">1</span>
+          <button data-action="min-inc">+</button>
+        </div>
+      </div>
+      <div class="stepper-row">
+        <span class="label">Longest combo</span>
+        <div class="stepper">
+          <button data-action="max-dec">−</button>
+          <span class="val" id="comboMaxVal">6</span>
+          <button data-action="max-inc">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="presetComboSettings">
+      <p class="punch-hint">Type punch numbers in the exact order to call them out, separated by spaces — any length works, e.g. <strong>1 1 2 3 5 2 3 4 5 3</strong>. The voice speaks the sequence itself, never a preset name.</p>
+      <div id="presetList"></div>
+      <div class="preset-input-row">
+        <input type="text" id="presetInput" class="preset-text-input" placeholder="e.g. 1 2 3" inputmode="numeric">
+        <button type="button" class="add-punch" id="addPresetBtn">+ Add</button>
       </div>
     </div>
   </section>
