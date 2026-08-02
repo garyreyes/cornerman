@@ -1,4 +1,4 @@
-const CACHE_NAME = "cornerman-v8";
+const CACHE_NAME = "cornerman-v9";
 const APP_SHELL = [
   "./cornerman.html",
   "./manifest.json",
@@ -13,6 +13,7 @@ const APP_SHELL = [
   "./js/speech.js",
   "./js/audio.js",
   "./js/punchEditor.js",
+  "./js/presetEditor.js",
   "./js/storage.js",
   "./js/state.js",
   "./js/utils.js"
