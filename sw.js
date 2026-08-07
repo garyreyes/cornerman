@@ -1,4 +1,4 @@
-const CACHE_NAME = "cornerman-v11";
+const CACHE_NAME = "cornerman-v12";
 const APP_SHELL = [
   "./cornerman.html",
   "./manifest.json",

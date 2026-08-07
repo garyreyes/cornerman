@@ -6,7 +6,7 @@
 import { settings, state } from "./state.js";
 import { clamp, randInt } from "./utils.js";
 import { generateCombo } from "./comboEngine.js";
-import { playBell, playFinalBell, playWarningClap, ensureAudio } from "./audio.js";
+import { playBell, playFinalBell, playTenSecondWarning, ensureAudio } from "./audio.js";
 import { speakCombo, speakCountdown, primeSpeech } from "./speech.js";
 
 let callbacks = {
@@ -48,7 +48,7 @@ function tick() {
   if (state.phase === "work") {
     if (remainingSec <= 10 && remainingSec > 0 && !state.tenWarned) {
       state.tenWarned = true;
-      playWarningClap();
+      playTenSecondWarning();
     }
     if (now >= state.nextComboAt && remainingMs > 2500) {
       const combo = generateCombo();

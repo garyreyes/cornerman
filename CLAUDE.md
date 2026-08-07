@@ -46,9 +46,19 @@ code itself.
   migration code, just add the field to `createDefaultSettings()`.
 - `js/audio.js` — all Web Audio tones route through a shared
   `masterGain → DynamicsCompressor → destination` chain (deliberate, for
-  loudness without clipping). Four bell patterns: classic/digital/airhorn/buzzer.
+  loudness without clipping). Five bell patterns:
+  classic/ring/digital/airhorn/buzzer (`ring` is the struck-metal boxing
+  bell, inharmonic partials with independent decays). 10-second warning
+  sound is separately selectable via `settings.warningSoundType`
+  (`clap`/`clapper`/`none`) through the `playTenSecondWarning()`
+  dispatcher — `clapper` is synthesized filtered noise (`noiseBurst()`),
+  not a tone, to read as a physical UFC-style crack rather than a beep.
 - `js/speech.js` — Web Speech API wrapper. `speakCombo()` for call-outs,
-  `speakCountdown()` for the rest-phase 3-2-1 voice.
+  `speakCountdown()` for the rest-phase 3-2-1 voice. Both apply
+  `pitchForRate()`, a heuristic that nudges `utter.pitch` down as
+  `voiceRate` climbs, to counter TTS engines that raise pitch as a side
+  effect of a faster rate ("chipmunk" artifact) — unverified against a
+  real affected device, see `CHANGES.md`.
 - `js/punchEditor.js`, `js/presetEditor.js` — render + wire their respective
   editable lists in the Settings sheet. Same pattern: `render*List(container,
   settings, opts)` + an `add*()` helper.
@@ -90,9 +100,11 @@ python3 -m http.server 8791
 
 `settings` (persisted, key `cornerman:settings`): `roundLen`, `restLen`,
 `rounds`, `comboMin`, `comboMax`, `comboGapMin`, `comboGapMax`,
-`voiceEnabled`, `voiceRate`, `voiceURI`, `calloutMode` (`"numbers"|"names"`),
-`bellType` (`"classic"|"digital"|"airhorn"|"buzzer"`),
-`restCountdownEnabled`, `comboMode` (`"random"|"presets"`),
+`voiceEnabled`, `voiceRate` (default 2.0, slider capped to 3), `voiceURI`,
+`calloutMode` (`"numbers"|"names"`),
+`bellType` (`"classic"|"ring"|"digital"|"airhorn"|"buzzer"`),
+`warningSoundType` (`"clap"|"clapper"|"none"`, plays at 10s left in a
+round), `restCountdownEnabled`, `comboMode` (`"random"|"presets"`),
 `comboPresets: [{sequence: number[], enabled}]`,
 `punches: [{num, name, enabled}]`.
 

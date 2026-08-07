@@ -8,7 +8,7 @@ import { settings, state } from "./state.js";
 import { clamp, fmt } from "./utils.js";
 import * as timer from "./timer.js";
 import { initVoices, availableVoices, speakCombo, speakCountdown } from "./speech.js";
-import { ensureAudio, playBell } from "./audio.js";
+import { ensureAudio, playBell, playTenSecondWarning } from "./audio.js";
 import { primeSpeech } from "./speech.js";
 import { saveSettings } from "./storage.js";
 import { renderPunchList, addPunch } from "./punchEditor.js";
@@ -207,6 +207,7 @@ function updateSettingsLabels() {
     btn.classList.toggle("active", btn.getAttribute("data-mode") === settings.calloutMode);
   });
   $("bellTypeSelect").value = settings.bellType;
+  $("warningSoundSelect").value = settings.warningSoundType;
   $("restCountdownToggle").checked = settings.restCountdownEnabled;
   document.querySelectorAll("#comboModeRow button").forEach(function (btn) {
     btn.classList.toggle("active", btn.getAttribute("data-combo-mode") === settings.comboMode);
@@ -288,6 +289,11 @@ $("bellTypeSelect").addEventListener("change", function () {
   saveSettings();
 });
 
+$("warningSoundSelect").addEventListener("change", function () {
+  settings.warningSoundType = $("warningSoundSelect").value;
+  saveSettings();
+});
+
 $("restCountdownToggle").addEventListener("change", function () {
   settings.restCountdownEnabled = $("restCountdownToggle").checked;
   saveSettings();
@@ -296,6 +302,11 @@ $("restCountdownToggle").addEventListener("change", function () {
 $("testBellBtn").addEventListener("click", function () {
   ensureAudio();
   playBell();
+});
+
+$("testWarningBtn").addEventListener("click", function () {
+  ensureAudio();
+  playTenSecondWarning();
 });
 
 $("testCountdownBtn").addEventListener("click", function () {

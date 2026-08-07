@@ -6,6 +6,48 @@ entry here after every change, before ending your turn.
 
 ---
 
+## 2026-08-07 (3) — Faster/louder call-outs, real bell tone, 10-sec warning options
+- **Faster voice**: default `voiceRate` raised 1.5 → 2.0; slider max capped
+  5 → 3 (candidate mitigation from the earlier chipmunk investigation —
+  narrowing the range keeps users off the multipliers most prone to the
+  resampling artifact). Added a pitch-compensation heuristic in
+  `js/speech.js` (`pitchForRate()`): `utter.pitch` is nudged down slightly
+  as rate climbs (`1 - (rate-1)*0.12`, clamped to `[0.7, 1.0]`) to counter
+  engines that raise pitch as a side effect of a faster rate. **This is a
+  heuristic, not a verified fix** — it hasn't been tested against a real
+  "chipmunk"-affected engine/device yet, only reasoned through. Needs a
+  real-device check before calling the chipmunk issue closed.
+- **Louder bell/warning tones**: `masterGain` in `js/audio.js` raised
+  1.8 → 2.6; compressor threshold lowered −10 → −16 dB and ratio raised
+  6 → 8 so the extra gain doesn't clip when tones overlap. Spoken
+  call-outs were **not** touched — `SpeechSynthesisUtterance.volume` was
+  already at its 1.0 ceiling; there's no louder to give it from JS.
+- **New "Ring (Boxing Bell)" bell option**: added alongside the existing
+  Classic/Digital/Air Horn/Buzzer choices (kept Classic as-is per user
+  request — this is additive, not a replacement). Synthesized as a
+  fundamental + 4 inharmonic partials (ratios 2.4/3.1/4.3/5.8×, real bells
+  don't ring at clean integer harmonics) each with its own decay length,
+  approximating a struck-metal ring instead of the old clean chime.
+- **10-second warning is now selectable**: new "10-second warning" dropdown
+  in Sounds (Clap / Clapper (UFC-style) / None), backed by new
+  `settings.warningSoundType`. The UFC-style "Clapper" is synthesized
+  noise, not a tone — added a `noiseBurst()` helper (buffered white noise
+  through a bandpass filter with a fast decay) in `js/audio.js`, since a
+  pure oscillator can't produce a percussive "crack." `js/timer.js` now
+  calls a new `playTenSecondWarning()` dispatcher instead of the old
+  `playWarningClap()` directly; the old clap tone is preserved as the
+  default so existing behavior doesn't silently change for users who don't
+  touch the new setting. Added a "Test warning" button next to it, same
+  pattern as "Test bell."
+- Bumped `sw.js` `CACHE_NAME` to `cornerman-v12`. Ran
+  `npm run build && npx cap sync android` — both succeeded.
+- Files touched: `js/state.js`, `js/audio.js`, `js/speech.js`,
+  `js/timer.js`, `js/ui.js`, `cornerman.html`, `sw.js`.
+- Next: real-device test of the pitch-compensation heuristic against
+  whatever engine originally produced the "chipmunk" complaint — if it
+  doesn't help, the harder fix (pre-recorded audio + real time-stretching)
+  is still on the table per the original investigation notes below.
+
 ## 2026-08-07 (2) — Recreated android/ via Capacitor, committed both changes
 - Committed the settings-reorg change from the entry below (commit `dc2c0e6`).
 - `npx cap sync android` failed: **the `android/` directory did not exist

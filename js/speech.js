@@ -3,8 +3,19 @@
    layer can re-render its <select> whenever the OS reports new voices. */
 
 import { settings } from "./state.js";
+import { clamp } from "./utils.js";
 
 export let availableVoices = [];
+
+// Many TTS engines implement SpeechSynthesisUtterance.rate via naive
+// resampling rather than true time-stretching, which raises pitch as an
+// unwanted side effect ("chipmunk voice") at higher rates. We can't fix
+// the engine, but we can counter-tune pitch down as rate climbs so the
+// perceived pitch stays closer to natural — a heuristic, not a real fix,
+// since not every engine has this artifact in the first place.
+function pitchForRate(rate) {
+  return clamp(1 - (rate - 1) * 0.12, 0.7, 1.0);
+}
 let onVoicesChangedCb = null;
 
 function loadVoices() {
@@ -33,7 +44,7 @@ export function speakCombo(picked) {
         : picked.map(function (p) { return p.num; }).join(", ");
     const utter = new SpeechSynthesisUtterance(text);
     utter.rate = settings.voiceRate;
-    utter.pitch = 1.0;
+    utter.pitch = pitchForRate(settings.voiceRate);
     utter.volume = 1.0;
     if (settings.voiceURI) {
       const match = availableVoices.filter(function (v) { return v.voiceURI === settings.voiceURI; })[0];
@@ -52,7 +63,7 @@ export function speakCountdown(n) {
     window.speechSynthesis.cancel();
     const utter = new SpeechSynthesisUtterance(String(n));
     utter.rate = settings.voiceRate;
-    utter.pitch = 1.0;
+    utter.pitch = pitchForRate(settings.voiceRate);
     utter.volume = 1.0;
     if (settings.voiceURI) {
       const match = availableVoices.filter(function (v) { return v.voiceURI === settings.voiceURI; })[0];

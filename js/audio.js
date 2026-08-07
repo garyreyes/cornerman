@@ -17,15 +17,16 @@ export function ensureAudio() {
       // Compressor first: gently limits peaks so boosting masterGain below
       // doesn't produce harsh digital clipping when tones overlap.
       compressor = audioCtx.createDynamicsCompressor();
-      compressor.threshold.setValueAtTime(-10, audioCtx.currentTime);
+      compressor.threshold.setValueAtTime(-16, audioCtx.currentTime);
       compressor.knee.setValueAtTime(20, audioCtx.currentTime);
-      compressor.ratio.setValueAtTime(6, audioCtx.currentTime);
+      compressor.ratio.setValueAtTime(8, audioCtx.currentTime);
       compressor.attack.setValueAtTime(0.002, audioCtx.currentTime);
       compressor.release.setValueAtTime(0.15, audioCtx.currentTime);
       compressor.connect(audioCtx.destination);
 
       masterGain = audioCtx.createGain();
-      masterGain.gain.value = 1.8; // overall loudness boost
+      masterGain.gain.value = 2.6; // overall loudness boost (compressor's lower
+      // threshold/higher ratio above keeps this from clipping when tones overlap)
       masterGain.connect(compressor);
     }
   }
@@ -47,6 +48,32 @@ function tone(freq, start, dur, type, gainPeak) {
   osc.stop(start + dur + 0.05);
 }
 
+// A short burst of filtered white noise — used for percussive, non-tonal
+// hits (the UFC-style clapper) that a pure oscillator can't produce.
+function noiseBurst(start, dur, gainPeak, filterFreq, filterQ) {
+  if (!audioCtx) return;
+  const bufferSize = Math.max(1, Math.floor(audioCtx.sampleRate * dur));
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+  const src = audioCtx.createBufferSource();
+  src.buffer = buffer;
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = "bandpass";
+  filter.frequency.value = filterFreq || 2000;
+  filter.Q.value = filterQ || 1;
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(gainPeak || 0.5, start);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+
+  src.connect(filter);
+  filter.connect(gain);
+  gain.connect(masterGain || audioCtx.destination);
+  src.start(start);
+  src.stop(start + dur + 0.02);
+}
+
 // Each pattern is a function(startTime, gainMultiplier) that schedules one
 // "ring" of the bell. gainMultiplier lets playFinalBell() fade later rings
 // in the triple-ring sequence, same as the original design. Base gain
@@ -56,6 +83,22 @@ const BELL_PATTERNS = {
   classic: function (t, g) {
     [880, 1320, 1760].forEach(function (f, i) {
       tone(f, t, 1.1, "sine", (0.34 - i * 0.07) * g);
+    });
+  },
+  // Struck-metal ring bell: a fundamental plus inharmonic partials (real
+  // bells don't ring at clean integer multiples), each with its own decay
+  // so the higher partials die out first — the actual physics of a strike.
+  ring: function (t, g) {
+    const fundamental = 950;
+    [
+      [1.0, 0.42, 1.9],
+      [2.4, 0.24, 1.3],
+      [3.1, 0.15, 0.9],
+      [4.3, 0.1, 0.6],
+      [5.8, 0.06, 0.4]
+    ].forEach(function (partial) {
+      const ratio = partial[0], gainMul = partial[1], durMul = partial[2];
+      tone(fundamental * ratio, t, 1.9 * durMul, "sine", gainMul * g);
     });
   },
   digital: function (t, g) {
@@ -92,9 +135,26 @@ export function playFinalBell() {
   }
 }
 
-export function playWarningClap() {
+function playWarningClap() {
   if (!audioCtx) return;
   const t = audioCtx.currentTime;
   tone(1000, t, 0.09, "square", 0.4);
   tone(1000, t + 0.14, 0.09, "square", 0.4);
+}
+
+// UFC-style 10-second clacker: a sharp, dry wooden crack (two quick
+// noise-burst hits), not a tone at all — noise is what makes it read as
+// a physical smack instead of a beep.
+function playWarningClapper() {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  noiseBurst(t, 0.05, 0.95, 2200, 3);
+  noiseBurst(t + 0.09, 0.06, 0.95, 1800, 3);
+}
+
+export function playTenSecondWarning() {
+  if (!audioCtx) return;
+  if (settings.warningSoundType === "clapper") playWarningClapper();
+  else if (settings.warningSoundType === "none") return;
+  else playWarningClap();
 }

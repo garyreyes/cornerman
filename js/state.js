@@ -40,10 +40,11 @@ export function createDefaultSettings() {
     comboGapMin: 3, // seconds between combo call-outs
     comboGapMax: 6,
     voiceEnabled: true,
-    voiceRate: 1.5, // speech speed multiplier
+    voiceRate: 2.0, // speech speed multiplier
     voiceURI: "", // "" = device default voice
     calloutMode: "numbers", // "numbers" | "names"
-    bellType: "classic", // "classic" | "digital" | "airhorn" | "buzzer"
+    bellType: "classic", // "classic" | "ring" | "digital" | "airhorn" | "buzzer"
+    warningSoundType: "clap", // "clap" | "clapper" | "none" — plays at 10s left in a round
     restCountdownEnabled: true, // speak "3, 2, 1" during the last 3s of rest
     comboMode: "random", // "random" | "presets"
     comboPresets: [
