@@ -3,6 +3,18 @@
    in that order with no randomization and no length limit — as opposed
    to comboEngine's random mode. */
 
+// Parses free-typed text like "1 2 3" or "1, 2, 3" into [1,2,3].
+// No maximum length — a 10+ punch preset parses exactly the same way
+// as a 2-punch one.
+export function parsePresetInput(text) {
+  return text
+    .split(/[\s,]+/)
+    .map(function (s) { return s.trim(); })
+    .filter(function (s) { return s.length > 0; })
+    .map(function (s) { return parseInt(s, 10); })
+    .filter(function (n) { return !isNaN(n) && n > 0; });
+}
+
 export function renderPresetList(container, settings, opts) {
   const onChange = (opts && opts.onChange) || function () {};
 
@@ -20,9 +32,22 @@ export function renderPresetList(container, settings, opts) {
     const row = document.createElement("div");
     row.className = "punch-row" + (preset.enabled === false ? " disabled" : "");
 
-    const label = document.createElement("div");
-    label.className = "preset-label";
-    label.textContent = preset.sequence.join("-");
+    const input = document.createElement("input");
+    input.className = "preset-text-input preset-label";
+    input.type = "text";
+    input.inputMode = "numeric";
+    input.value = preset.sequence.join(" ");
+    input.setAttribute("aria-label", "Edit preset sequence " + preset.sequence.join("-"));
+    input.addEventListener("change", function () {
+      const parsed = parsePresetInput(input.value);
+      if (!parsed.length) {
+        input.value = preset.sequence.join(" "); // revert — don't allow an empty sequence
+        return;
+      }
+      preset.sequence = parsed;
+      input.value = parsed.join(" ");
+      onChange();
+    });
 
     const enableLabel = document.createElement("label");
     enableLabel.className = "switch switch-sm";
@@ -51,23 +76,11 @@ export function renderPresetList(container, settings, opts) {
       onChange();
     });
 
-    row.appendChild(label);
+    row.appendChild(input);
     row.appendChild(enableLabel);
     row.appendChild(delEl);
     container.appendChild(row);
   });
-}
-
-// Parses free-typed text like "1 2 3" or "1, 2, 3" into [1,2,3].
-// No maximum length — a 10+ punch preset parses exactly the same way
-// as a 2-punch one.
-export function parsePresetInput(text) {
-  return text
-    .split(/[\s,]+/)
-    .map(function (s) { return s.trim(); })
-    .filter(function (s) { return s.length > 0; })
-    .map(function (s) { return parseInt(s, 10); })
-    .filter(function (n) { return !isNaN(n) && n > 0; });
 }
 
 export function addPreset(settings, sequence) {

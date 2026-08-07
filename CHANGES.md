@@ -6,6 +6,25 @@ entry here after every change, before ending your turn.
 
 ---
 
+## 2026-08-07 (4) — Presets are now editable in place
+- `js/presetEditor.js`: the preset row's sequence display (`1-2-3` etc.,
+  previously a static, non-interactive `<div class="preset-label">`) is
+  now a text `<input>` (reusing `.preset-text-input` styling from the "add
+  preset" row, alongside `.preset-label`). Editing and committing (blur or
+  Enter) re-parses the text with the existing `parsePresetInput()` — same
+  "1 2 3" / "1, 2, 3" free-typed format as adding a new one — and writes
+  the result back onto `preset.sequence`. An edit that parses to an empty
+  sequence is rejected and the input reverts to the last valid value,
+  rather than silently leaving a preset with zero punches.
+- Previously the only way to change an existing preset was delete +
+  re-add; that workflow still works but is no longer necessary.
+- `parsePresetInput()` was moved up in the file (it's now used by the
+  render function, not just re-exported for `ui.js`'s add-preset flow) —
+  no behavior change, same function, just relocated above its first use.
+- Bumped `sw.js` `CACHE_NAME` to `cornerman-v13`. Ran
+  `npm run build && npx cap sync android` — both succeeded.
+- Files touched: `js/presetEditor.js`, `sw.js`.
+
 ## 2026-08-07 (3) — Faster/louder call-outs, real bell tone, 10-sec warning options
 - **Faster voice**: default `voiceRate` raised 1.5 → 2.0; slider max capped
   5 → 3 (candidate mitigation from the earlier chipmunk investigation —

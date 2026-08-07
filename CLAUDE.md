@@ -61,7 +61,9 @@ code itself.
   real affected device, see `CHANGES.md`.
 - `js/punchEditor.js`, `js/presetEditor.js` — render + wire their respective
   editable lists in the Settings sheet. Same pattern: `render*List(container,
-  settings, opts)` + an `add*()` helper.
+  settings, opts)` + an `add*()` helper. Preset rows are directly editable
+  in place (text input parsed via `parsePresetInput()` on change) — no need
+  to delete and re-add to change a sequence.
 
 ## Build commands
 
