@@ -37,6 +37,7 @@ const presetInput = $("presetInput");
 const addPresetBtn = $("addPresetBtn");
 const randomComboSettings = $("randomComboSettings");
 const presetComboSettings = $("presetComboSettings");
+const punchesSection = $("punchesSection");
 
 const punchEditorOpts = { onChange: saveSettings, onLabelsChange: updateSettingsLabels };
 const presetEditorOpts = { onChange: saveSettings };
@@ -212,6 +213,7 @@ function updateSettingsLabels() {
   });
   randomComboSettings.style.display = settings.comboMode === "presets" ? "none" : "";
   presetComboSettings.style.display = settings.comboMode === "presets" ? "" : "none";
+  punchesSection.style.display = settings.comboMode === "presets" ? "none" : "";
 }
 
 document.querySelectorAll(".stepper button").forEach(function (btn) {

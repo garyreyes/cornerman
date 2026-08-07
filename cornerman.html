@@ -85,6 +85,17 @@
   </section>
 
   <section>
+    <h3>Mode</h3>
+    <div class="stepper-row">
+      <span class="label">Mode</span>
+      <div class="preset-row inline" id="comboModeRow">
+        <button type="button" data-combo-mode="random">Random</button>
+        <button type="button" data-combo-mode="presets">Presets</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
     <h3>Sounds</h3>
     <div class="stepper-row">
       <span class="label">Bell sound</span>
@@ -108,14 +119,6 @@
 
   <section>
     <h3>Combinations</h3>
-    <div class="stepper-row">
-      <span class="label">Mode</span>
-      <div class="preset-row inline" id="comboModeRow">
-        <button type="button" data-combo-mode="random">Random</button>
-        <button type="button" data-combo-mode="presets">Presets</button>
-      </div>
-    </div>
-
     <div id="randomComboSettings">
       <div class="stepper-row">
         <span class="label">Shortest combo</span>
@@ -204,7 +207,7 @@
     <div class="voice-status" id="voiceStatus"></div>
   </section>
 
-  <section>
+  <section id="punchesSection">
     <h3>Punches</h3>
     <p class="punch-hint">Tap <strong>▾</strong> to fill a name from a standard list, or type your own (e.g. "Gazelle Hook"). Spelling matters — the voice reads exactly what's typed.</p>
     <div id="punchList"></div>
