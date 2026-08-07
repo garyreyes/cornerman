@@ -123,6 +123,10 @@ python3 -m http.server 8791
   fee — Philippine e-wallet (GCash/Maya) virtual cards are rejected as
   prepaid; needs a real bank-issued card.
 - Preset combo mode + the settings reorg (Mode section, Punches hidden in
-  Presets mode) are both shipped in source but the Android app still needs
-  a re-sync (`npm run build && npx cap sync android`) — the native build
-  predates both.
+  Presets mode) are both shipped in source and synced into `android/`.
+- `android/` was freshly re-scaffolded via `npx cap add android` on
+  2026-08-07 (it did not exist on disk before that). It currently has
+  **Capacitor's default icon/splash placeholders, not the custom app icon
+  and splash screen** from earlier project history — needs to be redone.
+  `versionCode` restarted at 1 — verify against Play Console history
+  before the next upload if a build was ever submitted previously.

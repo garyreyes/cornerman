@@ -6,6 +6,38 @@ entry here after every change, before ending your turn.
 
 ---
 
+## 2026-08-07 (2) — Recreated android/ via Capacitor, committed both changes
+- Committed the settings-reorg change from the entry below (commit `dc2c0e6`).
+- `npx cap sync android` failed: **the `android/` directory did not exist
+  in this repo at all**, despite `CLAUDE.md` referencing
+  `android/app/build.gradle` / `android/variables.gradle` and git log
+  showing a prior "Add preset combo mode" commit. Same pattern as
+  `CLAUDE.md`/`CHANGES.md` earlier this session — referenced in context but
+  never actually present on disk/in git history for this checkout.
+- Ran `npx cap add android` (user confirmed) to scaffold a fresh native
+  project — `appId` correctly picked up as `com.gary.cornerman` from
+  `capacitor.config.json`. **`versionCode` starts at 1, `versionName`
+  "1.0"** since there was no prior native project to read old values from.
+  **If a build was ever uploaded to Play Console with a higher versionCode,
+  bump `android/app/build.gradle` before the next upload** — this fresh
+  scaffold does not know about that history.
+- App icon/splash are Capacitor's **default placeholder assets**, not the
+  custom icon/splash from the "Add custom app icon and splash screen" git
+  history (`a4969cd`) — that customization lived only in the previous
+  native project and needs to be redone/reapplied now that `android/` is
+  freshly generated. Not done this session.
+- Ran `npx cap sync android` — copied the current `www/` (settings reorg +
+  presets mode) into the new native project successfully.
+- Committed the new `android/` tree as-is (user confirmed), per
+  `.gitignore`'s existing comment that the android project itself should
+  be committed once created.
+- Files touched: `android/` (new, 53 files), per `.gitignore` excluding
+  `android/.gradle/`, `android/app/build/`, `android/build/`,
+  `android/local.properties`.
+- Next: reapply the custom app icon/splash screen assets to the new
+  `android/` project; open in Android Studio (`npx cap open android`) to
+  confirm it builds before assuming this is release-ready.
+
 ## 2026-08-07 — Applied the queued settings reorganization to the real repo
 - `CLAUDE.md` and `CHANGES.md` themselves did not exist on disk (only as
   in-memory context from a prior session) — recreated both at the project
