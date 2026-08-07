@@ -56,7 +56,7 @@ function tick() {
         callbacks.showCombo(combo);
         speakCombo(combo);
       }
-      const gapMin = clamp(settings.comboGapMin, 1, settings.comboGapMax);
+      const gapMin = clamp(settings.comboGapMin, 0.5, settings.comboGapMax);
       const gapMax = Math.max(gapMin, settings.comboGapMax);
       state.nextComboAt = now + randInt(gapMin * 1000, gapMax * 1000);
     }

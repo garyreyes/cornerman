@@ -199,8 +199,8 @@ function updateSettingsLabels() {
   $("voiceRateSlider").value = settings.voiceRate;
   $("voiceRateVal").textContent = settings.voiceRate.toFixed(1) + "x";
   document.querySelectorAll("#gapPresets button").forEach(function (btn) {
-    const lo = parseInt(btn.getAttribute("data-gap-min"), 10);
-    const hi = parseInt(btn.getAttribute("data-gap-max"), 10);
+    const lo = parseFloat(btn.getAttribute("data-gap-min"));
+    const hi = parseFloat(btn.getAttribute("data-gap-max"));
     btn.classList.toggle("active", lo === settings.comboGapMin && hi === settings.comboGapMax);
   });
   document.querySelectorAll("#calloutModeRow button").forEach(function (btn) {
@@ -231,10 +231,10 @@ document.querySelectorAll(".stepper button").forEach(function (btn) {
       case "min-dec": settings.comboMin = clamp(settings.comboMin - 1, 1, settings.comboMax); break;
       case "max-inc": settings.comboMax = clamp(settings.comboMax + 1, settings.comboMin, 12); break;
       case "max-dec": settings.comboMax = clamp(settings.comboMax - 1, settings.comboMin, 12); break;
-      case "gapmin-inc": settings.comboGapMin = clamp(settings.comboGapMin + 1, 1, settings.comboGapMax); break;
-      case "gapmin-dec": settings.comboGapMin = clamp(settings.comboGapMin - 1, 1, settings.comboGapMax); break;
-      case "gapmax-inc": settings.comboGapMax = clamp(settings.comboGapMax + 1, settings.comboGapMin, 60); break;
-      case "gapmax-dec": settings.comboGapMax = clamp(settings.comboGapMax - 1, settings.comboGapMin, 60); break;
+      case "gapmin-inc": settings.comboGapMin = clamp(settings.comboGapMin + 0.5, 0.5, settings.comboGapMax); break;
+      case "gapmin-dec": settings.comboGapMin = clamp(settings.comboGapMin - 0.5, 0.5, settings.comboGapMax); break;
+      case "gapmax-inc": settings.comboGapMax = clamp(settings.comboGapMax + 0.5, settings.comboGapMin, 60); break;
+      case "gapmax-dec": settings.comboGapMax = clamp(settings.comboGapMax - 0.5, settings.comboGapMin, 60); break;
     }
     updateSettingsLabels();
     if (state.phase === "idle") render(settings.roundLen);
@@ -244,8 +244,8 @@ document.querySelectorAll(".stepper button").forEach(function (btn) {
 
 document.querySelectorAll("#gapPresets button").forEach(function (btn) {
   btn.addEventListener("click", function () {
-    settings.comboGapMin = parseInt(btn.getAttribute("data-gap-min"), 10);
-    settings.comboGapMax = parseInt(btn.getAttribute("data-gap-max"), 10);
+    settings.comboGapMin = parseFloat(btn.getAttribute("data-gap-min"));
+    settings.comboGapMax = parseFloat(btn.getAttribute("data-gap-max"));
     updateSettingsLabels();
     saveSettings();
   });

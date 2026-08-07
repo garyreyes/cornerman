@@ -101,7 +101,10 @@ python3 -m http.server 8791
 ## Data model
 
 `settings` (persisted, key `cornerman:settings`): `roundLen`, `restLen`,
-`rounds`, `comboMin`, `comboMax`, `comboGapMin`, `comboGapMax`,
+`rounds`, `comboMin`, `comboMax`, `comboGapMin`, `comboGapMax` (seconds
+between combo call-outs; range 0.5–60 in 0.5s steps — the low end is a
+deliberate speed-training/challenge dial, not a bug if combos overlap
+speech at the fastest "Blitz" preset),
 `voiceEnabled`, `voiceRate` (default 2.0, slider capped to 3), `voiceURI`,
 `calloutMode` (`"numbers"|"names"`),
 `bellType` (`"classic"|"ring"|"digital"|"airhorn"|"buzzer"`),

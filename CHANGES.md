@@ -6,6 +6,36 @@ entry here after every change, before ending your turn.
 
 ---
 
+## 2026-08-07 (5) — Combo-frequency range widened for advanced-boxer challenge mode
+- User's actual goal (after walking back an initial "10x voice speed" ask
+  once I explained that's literally unintelligible on any TTS engine, not
+  just a chipmunk-pitch problem — real speech tops out ~2.5–3x before
+  becoming noise): a skilled boxer should be able to push the app to feel
+  genuinely too-fast-to-keep-up, as a difficulty/speed-training dial. The
+  actual lever for that is combo **frequency**, not voice rate — shortening
+  the gap between call-outs has zero voice-quality tradeoff, unlike rate.
+- Widened `comboGapMin`/`comboGapMax` range: floor dropped from 1s to
+  **0.5s**, step size dropped from whole seconds to **0.5s** (steppers in
+  `js/ui.js`, floor clamp in `js/timer.js`'s per-combo gap calculation).
+  Ceiling unchanged (60s) — slow/reaction-training end of the range is
+  untouched.
+- Added two new gap presets below the existing "Fast · 3–6s": **"Rapid ·
+  1–2s"** and **"Blitz · 0.5–1s"** in `cornerman.html`'s `#gapPresets` row.
+  At Blitz settings, a new combo can fire before speech for the previous
+  one finishes — `speakCombo()` already `cancel()`s in-flight speech before
+  starting the next utterance, so this reads as rapid-fire barking rather
+  than overlapping audio, which is the intended effect for a speed-training
+  mode (not a bug to fix).
+- Preset/stepper values switched from `parseInt` to `parseFloat` throughout
+  (`js/ui.js`) to carry the new fractional-second values correctly.
+- Bumped `sw.js` `CACHE_NAME` to `cornerman-v14`. Ran
+  `npm run build && npx cap sync android` — both succeeded.
+- Files touched: `cornerman.html`, `js/ui.js`, `js/timer.js`, `sw.js`.
+- Voice rate itself was left as-is from the prior session (default 2.0,
+  slider capped at 3) — that was a deliberate choice this session, not an
+  oversight, since the real fix for "too slow" turned out to be frequency,
+  not rate.
+
 ## 2026-08-07 (4) — Presets are now editable in place
 - `js/presetEditor.js`: the preset row's sequence display (`1-2-3` etc.,
   previously a static, non-interactive `<div class="preset-label">`) is
